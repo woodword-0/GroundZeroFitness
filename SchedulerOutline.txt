@@ -1,0 +1,25 @@
+
+You can deploy a serverless scheduling Streamlit app using Azure Functions 
+To achieve the desired functionality and minimize costs. Here's a high-level overview of the approach:
+
+Develop your Streamlit app: Create a Streamlit application that allows clients to input their schedules. 
+Streamlit is a Python library for building interactive web applications. 
+You can use Streamlit to create forms or UI components for capturing schedule inputs from clients.
+
+Azure Functions setup: Set up an Azure Functions app in your Azure account. Azure Functions supports Python as a runtime, so you can write your functions using Python.
+
+Function for schedule submission: Create an Azure Function that triggers when a client submits their schedule. 
+This function will receive the schedule input, process it, and store it in a database or any other suitable storage option provided by Azure, such as Azure Blob Storage or Azure Cosmos DB.
+
+Scheduler function: Create another Azure Function that runs periodically to update the scheduler based on the submitted schedules. 
+This function can fetch the schedules from the storage, perform any necessary calculations or updates, and store the updated scheduler information.
+
+Secure authentication: Implement authentication mechanisms to ensure that only authorized clients can access the scheduling app. 
+Azure provides services like Azure Active Directory (Azure AD) that you can integrate with your app for user authentication and management.
+
+Deploy and configure: Deploy your Streamlit app and Azure Functions to Azure. 
+You can use deployment tools like Azure CLI or Azure DevOps for streamlined deployment. 
+Configure the necessary environment variables, connections to databases, and authentication settings.
+
+Share the URL with clients: Once your app is deployed and running, you can share the URL with your clients. 
+They can access the app, input their schedules, and view the scheduler updates based on their inputs.
