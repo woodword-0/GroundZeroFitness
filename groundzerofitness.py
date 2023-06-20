@@ -1,46 +1,60 @@
 import streamlit as st
-import pandas as pd
-
-def save_schedule(schedule):
-    # Function to save the schedule data
-    # You can customize this function to save the data to a database or storage of your choice
-    # For simplicity, we'll just save it to a CSV file
-    df = pd.DataFrame([schedule], columns=['Client', 'Schedule'])
-    df.to_csv('schedule_data.csv', mode='a', header=not st.session_state.schedule_data)
-
-def load_schedule_data():
-    # Function to load the schedule data
-    # You can customize this function to load the data from your chosen storage
-    # For simplicity, we'll load it from a CSV file
-    try:
-        df = pd.read_csv('schedule_data.csv')
-    except FileNotFoundError:
-        df = pd.DataFrame(columns=['Client', 'Schedule'])
-    return df
+import datetime
 
 def main():
-    st.title("Client Schedule Input")
+    st.title("Ground Zero Fitness")
     
-    # Load existing schedule data
-    df = load_schedule_data()
+    # Owner's Schedule
+    st.subheader("Al's Schedule")
     
-    # Display existing schedule data
-    st.subheader("Existing Schedules")
-    st.table(df)
+    owner_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    owner_schedule = {}
     
-    # Schedule input form
-    st.subheader("Input New Schedule")
-    client_name = st.text_input("Client Name")
-    schedule = st.text_input("Schedule")
-    if st.button("Submit"):
-        if client_name and schedule:
-            save_schedule({'Client': client_name, 'Schedule': schedule})
-            st.success("Schedule submitted successfully.")
-            # Clear input fields
-            st.session_state.client_name = ''
-            st.session_state.schedule = ''
+    for day in owner_days:
+        st.write(f"**{day}:**")
+        start_time = st.time_input("Start Time", key=f"owner_start_{day}", value=datetime.time(5, 0))
+        end_time = st.time_input("End Time", key=f"owner_end_{day}", value=datetime.time(17, 0))
+        
+        if start_time < end_time:
+            owner_schedule[day] = (start_time, end_time)
         else:
-            st.error("Please enter both Client Name and Schedule.")
-
+            st.error("Invalid time range. Start time must be before end time.")
+    
+    # Client's Schedule
+    st.subheader("Fighter's Schedule")
+    
+    client_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    client_schedule = {}
+    
+    for day in client_days:
+        st.write(f"**{day}:**")
+        start_time = st.time_input("Start Time", key=f"client_start_{day}", value=datetime.time(5, 17))
+        end_time = st.time_input("End Time", key=f"client_end_{day}", value=datetime.time(5, 17))
+        
+        if start_time < end_time:
+            client_schedule[day] = (start_time, end_time)
+        else:
+            st.error("Invalid time range. Start time must be before end time.")
+    
+    # Check schedules
+    st.subheader("Schedule Conflicts")
+    
+    conflicts = []
+    
+    for day in owner_schedule:
+        if day in client_schedule:
+            owner_start, owner_end = owner_schedule[day]
+            client_start, client_end = client_schedule[day]
+            
+            if owner_start <= client_end and client_start <= owner_end:
+                conflicts.append(day)
+    
+    if conflicts:
+        st.write("Conflicts exist on the following days:")
+        for day in conflicts:
+            st.write(f"- {day}")
+    else:
+        st.write("No schedule conflicts.")
+        
 if __name__ == '__main__':
     main()
